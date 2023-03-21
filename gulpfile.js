@@ -3,39 +3,48 @@ const scss = require('gulp-sass')(require('sass'))
 const concat = require('gulp-concat')
 const uglify = require('gulp-uglify-es').default
 const browserSync = require('browser-sync').create()
+const autoprefixer = require('gulp-autoprefixer')
 
 // Styles
 function styles() {
-	return src('app/scss/style.scss')
+	return src('src/scss/style.scss')
+		.pipe(autoprefixer({ overrideBrowserslist: ['last 10 version'] }))
 		.pipe(concat('style.min.css'))
 		.pipe(scss({ outputStyle: 'compressed' }))
-		.pipe(dest('app/css'))
+		.pipe(dest('src/css'))
 		.pipe(browserSync.stream())
 }
 
 // Scripts
 function scripts() {
-	return src('app/js/main.js')
+	return src([/*'node_modules/swiper/swiper-bundle.js',*/ 'src/js/main.js'])
 		.pipe(concat('main.min.js'))
 		.pipe(uglify())
-		.pipe(dest('app/js'))
+		.pipe(dest('src/js'))
 		.pipe(browserSync.stream())
 }
 
 // Watching
 function watching() {
-	watch(['app/scss/style.scss'], styles)
-	watch(['app/js/main.js'], scripts)
-	watch(['app/*.html']).on('change', browserSync.reload)
+	watch(['src/scss/style.scss'], styles)
+	watch(['src/js/main.js'], scripts)
+	watch(['src/*.html']).on('change', browserSync.reload)
 }
 
 // BrowserSync
 function browserSyncWatch() {
 	browserSync.init({
 		server: {
-			baseDir: 'app/',
+			baseDir: 'src/',
 		},
 	})
+}
+
+// Build
+function build() {
+	return src(['src/css/style.min.css', 'src/js/main.min.js', 'src/**/*.html'], {
+		base: 'src',
+	}).pipe(dest('dist'))
 }
 
 // Exports
@@ -43,6 +52,7 @@ exports.styles = styles
 exports.scripts = scripts
 exports.watching = watching
 exports.browserSyncWatch = browserSyncWatch
+exports.build = build
 
 // Parallel
 exports.default = parallel(styles, scripts, browserSyncWatch, watching)
