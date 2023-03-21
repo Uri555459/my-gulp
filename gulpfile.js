@@ -1,8 +1,9 @@
-const { src, dest } = require('gulp')
+const { src, dest, watch } = require('gulp')
 const scss = require('gulp-sass')(require('sass'))
 const concat = require('gulp-concat')
 const uglify = require('gulp-uglify-es').default
 
+// Styles
 function styles() {
 	return src('app/scss/style.scss')
 		.pipe(concat('style.min.css'))
@@ -10,6 +11,7 @@ function styles() {
 		.pipe(dest('app/css'))
 }
 
+// Scripts
 function scripts() {
 	return src('app/js/main.js')
 		.pipe(concat('main.min.js'))
@@ -17,5 +19,13 @@ function scripts() {
 		.pipe(dest('app/js'))
 }
 
+// Watching
+function watching() {
+	watch(['app/scss/style.scss'], styles)
+	watch(['app/js/main.js'], scripts)
+}
+
+// Exports
 exports.styles = styles
 exports.scripts = scripts
+exports.watching = watching
