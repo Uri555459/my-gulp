@@ -1,4 +1,4 @@
-const { src, dest, watch } = require('gulp')
+const { src, dest, watch, parallel } = require('gulp')
 const scss = require('gulp-sass')(require('sass'))
 const concat = require('gulp-concat')
 const uglify = require('gulp-uglify-es').default
@@ -26,7 +26,7 @@ function scripts() {
 function watching() {
 	watch(['app/scss/style.scss'], styles)
 	watch(['app/js/main.js'], scripts)
-	watch(['app/*.html']).concat('change', browserSync.reload)
+	watch(['app/*.html']).on('change', browserSync.reload)
 }
 
 // BrowserSync
@@ -43,3 +43,6 @@ exports.styles = styles
 exports.scripts = scripts
 exports.watching = watching
 exports.browserSyncWatch = browserSyncWatch
+
+// Parallel
+exports.default = parallel(styles, scripts, browserSyncWatch, watching)
